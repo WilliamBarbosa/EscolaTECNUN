@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "Cadastro Aluno";
+}
+
+@model EscolaTECNUN.Models.InfoTurma
+@{
+    ViewBag.Title = "Lista de Turmas";
+}
+
+<h2>Lista de Alunos na Turma</h2>
+
+
+
+<div class="InfoTurma">
+    <h4>Dados da Turma</h4>
+    <h5>Turma: @Html.ViewData.Model.NumTurma  @Html.ViewData.Model.Periodo</h5>
+    <h5>Professor: @Html.ViewData.Model.Professor</h5>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Cód.</th>
+                <th>Aluno</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @Html.ViewData.Model.Aluno)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Nome</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+

@@ -1,0 +1,43 @@
+﻿@{
+    ViewBag.Title = "Cadastro Aluno";
+}
+
+@model IEnumerable<EscolaTECNUN.Models.ListaTurma>
+@{
+    ViewBag.Title = "Lista de Turmas";
+}
+
+<h2>Lista de turmas</h2>
+
+
+
+<div class="ListaTurma">
+    <h4>Turmas</h4>
+    <hr />
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Cód.</th>
+                <th>Período</th>
+                <th>Professor</th>
+                <th>Alunos</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td>@item.NumTurma</td>
+                <td>@item.Periodo</td>
+                <td>@item.Professor</td>
+                <td>@Html.ActionLink("Ver Alunos", "VerAlunos", "Home", new EscolaTECNUN.Models.InfoTurma{
+                   NumTurma = @item.NumTurma,
+                   Periodo = @item.Periodo,
+                   Professor = @item.Professor
+               }, null)</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
