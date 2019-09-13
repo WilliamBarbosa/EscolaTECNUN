@@ -21,23 +21,136 @@
                 <th>Período</th>
                 <th>Professor</th>
                 <th>Alunos</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
-            <tr>
-                <td>@item.NumTurma</td>
-                <td>@item.Periodo</td>
-                <td>@item.Professor</td>
-                <td>@Html.ActionLink("Ver Alunos", "VerAlunos", "Home", new EscolaTECNUN.Models.InfoTurma{
-                   NumTurma = @item.NumTurma,
-                   Periodo = @item.Periodo,
-                   Professor = @item.Professor
-               }, null)</td>
-            </tr>
+                <tr>
+                    <td>@item.NumTurma</td>
+                    <td>@item.Periodo</td>
+                    <td>@item.Professor</td>
+                    <td>
+                        @Html.ActionLink("Ver Alunos", "VerAlunos", "Home", new EscolaTECNUN.Models.InfoTurma
+                        {
+                           NumTurma = @item.NumTurma,
+                           Periodo = @item.Periodo,
+                           Professor = @item.Professor
+                       }, null)
+                    </td>
+                    <td>
+                        <button type="button" class="EditarTurma btn btn-primary" id="@item.NumTurma">Editar</button>
+                        <button type="button" class="ExcluirTurma btn btn-danger" id="@item.NumTurma">Excluir</button>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
+
+    <div class="modal fade" id="editarTurmaModal" tabindex="-1" role="dialog" aria-labelledby="editarTurmaModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h5 style="font-weight:bold" class="modal-title" id="editarTurmaModalLabel"></h5>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <form id="editarTurmaForm" method="post" class="form-horizontal" action="">
+
+                        <input type="hidden" class="NumTurma form-control" name="NumTurma" />
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Data da Turma: </label>
+                            <div class="col-md-10">
+                                <input type="date" class="DataTurma form-control" name="DataTurma" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Periodo: </label>
+                            <div class="col-md-10">
+                                <select class="Periodo form-control" name="Periodo" required>
+                                    <option value="Manhã">Manhã</option>
+                                    <option value="Tarde">Tarde</option>
+                                    <option value="Noite">Noite</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Horario: </label>
+                            <div class="col-md-10">
+                                <input type="text" class="Horario form-control" name="Horario" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="control-label col-md-2">Professores</label>
+                            <div class="col-md-10">
+                                <select id="ProfessorId" class="ProfessorId form-control" runat="server" name="ProfessorId" required>
+                                    <option value="">Selecione o professor</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="form-group" style="float:right;padding-left:5px;">
+                                <input type="submit" id="AtualizarTurma" value="Salvar" runat="server" onserverclick="AtualizarTurma" class="btn btn-default" />
+
+                            </div>
+                            <div class="form-group" style="float:right">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ExcluirTurmaModal" tabindex="-1" role="dialog" aria-labelledby="ExcluirTurmaModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="row">
+                        <div class="col-md-10">
+                            <h5 style="font-weight:bold" class="modal-title" id="ExcluirTurmaModalLabel"></h5>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="form-group" style="float:right;padding-left:5px;">
+                                <button type="button" class="RemoverTurma btn btn-danger">Excluir</button>
+                            </div>
+                            <div class="form-group" style="float:right">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    ConsultaProfessores();
+</script>
 

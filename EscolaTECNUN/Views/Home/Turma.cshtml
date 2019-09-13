@@ -56,17 +56,24 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.ProfessorId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label class="control-label col-md-2">Professores</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.ProfessorId, new { htmlAttributes = new { @class = "form-control", type = "number", required="true"} })
-                @Html.ValidationMessageFor(model => model.ProfessorId, "", new { @class = "text-danger" })
+                <select id="ProfessorId" class="form-control" runat="server" name="ProfessorId" required>
+                    <option value="">Selecione o professor</option>
+                </select>
             </div>
         </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Cadastrar" runat="server" onserverclick="CadAluno" class="btn btn-default" />
+                <input type="submit" value="Cadastrar" runat="server" onserverclick="CadTurma" class="btn btn-default" />
             </div>
         </div>
-    </div>
+     </div>
+
+
 }
+
+<script>
+    ConsultaProfessores();
+</script>
