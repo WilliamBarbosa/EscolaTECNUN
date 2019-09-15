@@ -590,5 +590,153 @@ namespace EscolaTECNUN.Controllers
                 Mensagem = "Removido com Sucesso"
             }, JsonRequestBehavior.AllowGet);
         }
+
+
+        public ActionResult ConsultaAluno(string CodAluno)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+            //definição do comando sql
+            string sql = "SELECT nome, datanasc ,telefone, cpf, email, infoadic" +
+                         " FROM dbo.Aluno WHERE id = " + CodAluno;
+
+            Aluno aluno = new Aluno();
+
+            try
+            {
+
+                SqlCommand comando = new SqlCommand(sql, conn);
+
+                conn.Open();
+
+                using (SqlDataReader reader = comando.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            aluno.Nome = Convert.ToString(reader["nome"]);
+                            aluno.CPF = Convert.ToString(reader["cpf"]);
+                            aluno.DataNasc = Convert.ToDateTime(reader["datanasc"]);
+                            aluno.Telefone = Convert.ToString(reader["telefone"]);
+                            aluno.Email = Convert.ToString(reader["email"]);
+                            aluno.InfoAdic = Convert.ToString(reader["infoadic"]);
+                        }
+                    }
+                }
+
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Json(aluno, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult AtualizarAluno(Aluno aluno)
+        {
+            //Turma turma = JsonConvert.DeserializeObject<Turma>(jsonTurma);
+
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+
+            //definição do comando sql
+            string sql = "UPDATE Aluno SET nome =  @nome," +
+                " cpf = @cpf, datanasc = @datanasc, telefone =  @telefone," +
+                " email = @email, infoadic = @infoadic" +
+                " WHERE id = @id";
+
+            try
+            {
+                SqlCommand comando = new SqlCommand(sql, conn);
+
+                comando.Parameters.Add(new SqlParameter("@id", aluno.Id));
+                comando.Parameters.Add(new SqlParameter("@nome", aluno.Nome));
+                comando.Parameters.Add(new SqlParameter("@cpf", aluno.CPF));
+                comando.Parameters.Add(new SqlParameter("@datanasc", aluno.DataNasc));
+                comando.Parameters.Add(new SqlParameter("@telefone", aluno.Telefone));
+                comando.Parameters.Add(new SqlParameter("@email", aluno.Email));
+                comando.Parameters.Add(new SqlParameter("@infoadic", aluno.InfoAdic));
+
+                conn.Open();
+                comando.ExecuteNonQuery();
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Erro Ao Atualizar aluno"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Json(new
+            {
+                Sucesso = true,
+                Mensagem = "Alterado com Sucesso"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult RemoverAluno(int Id, string NumTurma)
+        {
+
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+
+            try
+            {
+                string sql = "DELETE FROM Matricula WHERE turmaid = " +
+                "(SELECT TOP(1) id FROM Turma WHERE numturma = @numturma) and alunoid = @id";
+
+                SqlCommand comando = new SqlCommand(sql, conn);
+
+                comando.Parameters.Add(new SqlParameter("@numturma", NumTurma));
+                comando.Parameters.Add(new SqlParameter("@id", Id));
+
+                conn.Open();
+                comando.ExecuteNonQuery();
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Erro Ao Remover aluno da turma"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Json(new
+            {
+                Sucesso = true,
+                Mensagem = "Removido com Sucesso"
+            }, JsonRequestBehavior.AllowGet);
+        }
     }
 }
