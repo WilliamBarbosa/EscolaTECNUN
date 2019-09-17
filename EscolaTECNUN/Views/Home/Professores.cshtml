@@ -1,51 +1,53 @@
 ﻿@{
-    ViewBag.Title = "Lista de Alunos na Turma";
+    ViewBag.Title = "Lista de Professores";
 }
 
-@model EscolaTECNUN.Models.InfoTurma
+@model EscolaTECNUN.Models.Professores
 @{
-    ViewBag.Title = "Lista de Alunos na Turma";
+    ViewBag.Title = "Lista de Professores";
 }
 
-<h2>Lista de Alunos na Turma</h2>
+<h2>Lista de Professores</h2>
 
 
 
-<div class="InfoTurma">
-    <h4>Dados da Turma</h4>
-    <h5>Turma: @Html.ViewData.Model.NumTurma  @Html.ViewData.Model.Periodo</h5>
-    <h5>Professor: @Html.ViewData.Model.Professor</h5>
-    <hr />
+<div class="InfoProfessores">
     <table class="table">
         <thead>
             <tr>
                 <th>Cód.</th>
-                <th>Aluno</th>
+                <th>Professor</th>
+                <th>CPF</th>
+                <th>Data de Nascimento</th>
+                <th>Telefone</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in @Html.ViewData.Model.Aluno)
+            @foreach (var item in Model.Professor)
             {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.Nome</td>
-                    <td>
-                        <button type="button" class="EditarAluno btn btn-primary" id="@item.Id">Editar</button>
-                        <button type="button" class="ExcluirAluno btn btn-danger" id="@item.Id" data-turma="@Html.ViewData.Model.NumTurma">Excluir</button>
-                    </td>
-                </tr>
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Nome</td>
+                <td>@item.CPF</td>
+                <td>@item.DataNasc</td>
+                <td>@item.Telefone</td>
+                <td>
+                    <button type="button" class="EditarProfessor btn btn-primary" id="@item.Id">Editar</button>
+                    <button type="button" class="ExcluirProfessor btn btn-danger" id="@item.Id" data-turma="">Excluir</button>
+                </td>
+            </tr>
             }
         </tbody>
     </table>
 
-    <div class="modal fade" id="editarAlunoModal" tabindex="-1" role="dialog" aria-labelledby="editarAlunoModal" aria-hidden="true">
+    <div class="modal fade" id="editarProfessorModal" tabindex="-1" role="dialog" aria-labelledby="editarProfessorModal" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="row">
                         <div class="col-md-10">
-                            <h5 style="font-weight:bold" class="modal-title" id="editarAlunoModalLabel"></h5>
+                            <h5 style="font-weight:bold" class="modal-title" id="editarProfessorModalLabel"></h5>
                         </div>
                         <div class="col-md-2">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -55,7 +57,7 @@
                     </div>
                 </div>
                 <div class="modal-body">
-                    <form id="editarAlunoForm" method="post" class="form-horizontal" action="">
+                    <form id="editarProfessorForm" method="post" class="form-horizontal" action="">
 
                         <input type="hidden" class="Id form-control" name="Id" />
 
@@ -86,25 +88,11 @@
                                 <input type="text" class="Telefone form-control" name="Telefone" required />
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Email: </label>
-                            <div class="col-md-10">
-                                <input type="text" class="Email form-control" name="Email" required />
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label col-md-2">InfoAdic: </label>
-                            <div class="col-md-10">
-                                <input type="text" class="InfoAdic form-control" name="InfoAdic" required />
-                            </div>
-                        </div>
                     </form>
                     <div class="modal-footer">
                         <div class="row">
                             <div class="form-group" style="float:right;padding-left:5px;">
-                                <input type="submit" id="AtualizarAluno" value="Salvar" runat="server" onserverclick="AtualizarTurma" class="btn btn-default" />
+                                <input type="submit" id="AtualizarProfessor" value="Salvar" runat="server" onserverclick="AtualizarTurma" class="btn btn-default" />
 
                             </div>
                             <div class="form-group" style="float:right">
@@ -117,13 +105,13 @@
         </div>
     </div>
 
-    <div class="modal fade" id="ExcluirAlunoModal" tabindex="-1" role="dialog" aria-labelledby="ExcluirAlunoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="ExcluirProfessorModal" tabindex="-1" role="dialog" aria-labelledby="ExcluirProfessorModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="row">
                         <div class="col-md-10">
-                            <h5 style="font-weight:bold" class="modal-title" id="ExcluirAlunoModalLabel"></h5>
+                            <h5 style="font-weight:bold" class="modal-title" id="ExcluirProfessorModalLabel"></h5>
                         </div>
                         <div class="col-md-2">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -136,7 +124,7 @@
                     <div class="modal-footer">
                         <div class="row">
                             <div class="form-group" style="float:right;padding-left:5px;">
-                                <button type="button" class="RemoverAluno btn btn-danger">Excluir</button>
+                                <button type="button" class="RemoverProfessor btn btn-danger">Excluir</button>
                             </div>
                             <div class="form-group" style="float:right">
                                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>

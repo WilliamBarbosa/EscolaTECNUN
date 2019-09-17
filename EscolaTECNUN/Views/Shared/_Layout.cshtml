@@ -30,6 +30,13 @@
                     <li>@Html.ActionLink("Cadastro Turma", "Turma", "Home")</li>
                     <li>@Html.ActionLink("Matricular Aluno", "Matricula", "Home")</li>
                     <li>@Html.ActionLink("Lista de Turmas", "ListarTurmas", "Home")</li>
+                    <li>
+                        @Html.ActionLink("Alunos", "VerAlunos", "Home", new EscolaTECNUN.Models.InfoTurma
+                    {
+                       NumTurma = ""
+                   }, null)
+                </li>
+                <li>@Html.ActionLink("Professores", "VerProfessores", "Home")</li>
                 </ul>
             </div>
         </div>

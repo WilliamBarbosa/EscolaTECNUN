@@ -124,6 +124,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Professores.cs" />
     <Compile Include="Models\InfoTurma.cs" />
     <Compile Include="Models\Matricula.cs" />
     <Compile Include="Models\ListaTurma.cs" />
@@ -177,6 +178,8 @@
     <Content Include="Views\Home\ListarTurmas.cshtml" />
     <Content Include="Views\Home\Matricula.cshtml" />
     <Content Include="Views\Home\VerAlunos.cshtml" />
+    <Content Include="Views\Home\Alunos.cshtml" />
+    <Content Include="Views\Home\Professores.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

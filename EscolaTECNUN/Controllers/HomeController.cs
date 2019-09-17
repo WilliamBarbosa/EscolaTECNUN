@@ -324,11 +324,22 @@ namespace EscolaTECNUN.Controllers
 
             SqlConnection conn = new SqlConnection(cs);
             //definição do comando sql
-            string sql = "SELECT a.id, a.nome " +
+
+            string sql = "";
+
+            if (infoturma.NumTurma == null)
+            {
+                sql = "SELECT * " +
+                " FROM dbo.Aluno ";
+            }
+            else
+            {
+                sql = "SELECT a.* " +
                 " FROM dbo.Aluno a " +
                 " INNER JOIN dbo.Matricula m ON m.alunoid = a.id" +
                 " INNER JOIN dbo.Turma t ON t.id = m.turmaid" +
                 " WHERE t.numturma = @numturma";
+            }
 
             try
             {
@@ -336,7 +347,8 @@ namespace EscolaTECNUN.Controllers
 
                 SqlCommand comando = new SqlCommand(sql, conn);
 
-                comando.Parameters.Add(new SqlParameter("@numturma", infoturma.NumTurma));
+                if (infoturma.NumTurma != null)
+                    comando.Parameters.Add(new SqlParameter("@numturma", infoturma.NumTurma));
 
                 conn.Open();
 
@@ -349,6 +361,11 @@ namespace EscolaTECNUN.Controllers
                             Aluno a = new Aluno();
                             a.Id = reader.GetInt32(reader.GetOrdinal("id"));
                             a.Nome = reader.GetString(reader.GetOrdinal("nome"));
+                            a.CPF = reader.GetString(reader.GetOrdinal("cpf"));
+                            a.DataNasc = reader.GetDateTime(reader.GetOrdinal("datanasc"));
+                            a.Telefone = reader.GetString(reader.GetOrdinal("telefone"));
+                            a.Email = reader.GetString(reader.GetOrdinal("email"));
+                            a.InfoAdic = reader.GetString(reader.GetOrdinal("infoadic"));
                             infoturma.Aluno.Add(a);
                         }
                     }
@@ -366,7 +383,10 @@ namespace EscolaTECNUN.Controllers
                 conn.Close();
             }
 
-            return View("VerAlunos",infoturma);
+            if (infoturma.NumTurma == null)
+                return View("Alunos",infoturma);
+            else
+                return View("VerAlunos", infoturma);
         }
 
         public ActionResult ConsultaProfessores()
@@ -706,13 +726,190 @@ namespace EscolaTECNUN.Controllers
 
             try
             {
-                string sql = "DELETE FROM Matricula WHERE turmaid = " +
+               if (NumTurma == "")
+                {
+                    string sql = "DELETE FROM Matricula WHERE alunoid = @id";
+
+                    SqlCommand comando = new SqlCommand(sql, conn);
+
+                    comando.Parameters.Add(new SqlParameter("@id", Id));
+
+                    conn.Open();
+                    comando.ExecuteNonQuery();
+                    conn.Close();
+
+                    sql = "DELETE FROM Aluno WHERE id = @id";
+
+                    comando = new SqlCommand(sql, conn);
+
+                    comando.Parameters.Add(new SqlParameter("@id", Id));
+
+                    conn.Open();
+                    comando.ExecuteNonQuery();
+                    conn.Close();
+
+                }
+                else
+                {
+                    string sql = "DELETE FROM Matricula WHERE turmaid = " +
                 "(SELECT TOP(1) id FROM Turma WHERE numturma = @numturma) and alunoid = @id";
+
+                    SqlCommand comando = new SqlCommand(sql, conn);
+
+                    comando.Parameters.Add(new SqlParameter("@numturma", NumTurma));
+                    comando.Parameters.Add(new SqlParameter("@id", Id));
+
+                    conn.Open();
+                    comando.ExecuteNonQuery();
+                    conn.Close();
+
+                }
+                
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Erro Ao Remover aluno da turma"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Json(new
+            {
+                Sucesso = true,
+                Mensagem = "Removido com Sucesso"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult VerProfessores(Professores professores)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+            //definição do comando sql
+
+            string sql = "SELECT * " +
+                " FROM dbo.Professor ";
+
+            try
+            {
+                professores.Professor = new List<Professor>();
 
                 SqlCommand comando = new SqlCommand(sql, conn);
 
-                comando.Parameters.Add(new SqlParameter("@numturma", NumTurma));
-                comando.Parameters.Add(new SqlParameter("@id", Id));
+                conn.Open();
+
+                using (SqlDataReader reader = comando.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            Professor p = new Professor();
+                            p.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                            p.Nome = reader.GetString(reader.GetOrdinal("nome"));
+                            p.CPF = reader.GetString(reader.GetOrdinal("cpf"));
+                            p.DataNasc = reader.GetDateTime(reader.GetOrdinal("datanasc"));
+                            p.Telefone = reader.GetString(reader.GetOrdinal("telefone"));
+                            professores.Professor.Add(p);
+                        }
+                    }
+                }
+
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                return Content("Erro ao visualizar os professores");
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return View("Professores", professores);
+        }
+
+        public ActionResult ConsultaProfessor(string CodProfessor)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+            //definição do comando sql
+            string sql = "SELECT nome, datanasc ,telefone, cpf " +
+                         " FROM dbo.Professor WHERE id = " + CodProfessor;
+
+            Professor Professor = new Professor();
+
+            try
+            {
+
+                SqlCommand comando = new SqlCommand(sql, conn);
+
+                conn.Open();
+
+                using (SqlDataReader reader = comando.ExecuteReader())
+                {
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            Professor.Nome = Convert.ToString(reader["nome"]);
+                            Professor.CPF = Convert.ToString(reader["cpf"]);
+                            Professor.DataNasc = Convert.ToDateTime(reader["datanasc"]);
+                            Professor.Telefone = Convert.ToString(reader["telefone"]);
+                        }
+                    }
+                }
+
+                conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = ex.Message
+                }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Json(Professor, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult AtualizarProfessor(Professor Professor)
+        {
+
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+
+            //definição do comando sql
+            string sql = "UPDATE Professor SET nome =  @nome," +
+                " cpf = @cpf, datanasc = @datanasc, telefone =  @telefone" +
+                " WHERE id = @id";
+
+            try
+            {
+                SqlCommand comando = new SqlCommand(sql, conn);
+
+                comando.Parameters.Add(new SqlParameter("@id", Professor.Id));
+                comando.Parameters.Add(new SqlParameter("@nome", Professor.Nome));
+                comando.Parameters.Add(new SqlParameter("@cpf", Professor.CPF));
+                comando.Parameters.Add(new SqlParameter("@datanasc", Professor.DataNasc));
+                comando.Parameters.Add(new SqlParameter("@telefone", Professor.Telefone));
 
                 conn.Open();
                 comando.ExecuteNonQuery();
@@ -724,7 +921,70 @@ namespace EscolaTECNUN.Controllers
                 return Json(new
                 {
                     Sucesso = false,
-                    Mensagem = "Erro Ao Remover aluno da turma"
+                    Mensagem = "Erro Ao Atualizar Professor"
+                }, JsonRequestBehavior.AllowGet);
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return Json(new
+            {
+                Sucesso = true,
+                Mensagem = "Alterado com Sucesso"
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult RemoverProfessor(int Id)
+        {
+
+            string cs = ConfigurationManager.ConnectionStrings["EscolaTECNUN"].ConnectionString;
+
+            SqlConnection conn = new SqlConnection(cs);
+            //definição do comando sql
+            string sql = "SELECT * " +
+                         " FROM dbo.Turma WHERE professorid = " + Id;
+
+            SqlCommand comando = new SqlCommand(sql, conn);
+
+            conn.Open();
+
+            SqlDataReader reader = comando.ExecuteReader();
+
+            if (reader.HasRows)
+            {
+                conn.Close();
+
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Existe turma com este professor para ministrar aula. Favor retirar este professor dessa(s) turma(s)."
+                }, JsonRequestBehavior.AllowGet);
+            }
+
+            conn.Close();
+
+
+            try
+            {
+                    sql = "DELETE FROM Professor WHERE id = @id";
+
+                    comando = new SqlCommand(sql, conn);
+
+                    comando.Parameters.Add(new SqlParameter("@id", Id));
+
+                    conn.Open();
+                    comando.ExecuteNonQuery();
+                    conn.Close();
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    Sucesso = false,
+                    Mensagem = "Erro Ao Remover Professor"
                 }, JsonRequestBehavior.AllowGet);
             }
             finally

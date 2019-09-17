@@ -1,40 +1,44 @@
 ﻿@{
-    ViewBag.Title = "Lista de Alunos na Turma";
+    ViewBag.Title = "Lista de Alunos";
 }
 
 @model EscolaTECNUN.Models.InfoTurma
 @{
-    ViewBag.Title = "Lista de Alunos na Turma";
+    ViewBag.Title = "Lista de Alunos";
 }
 
-<h2>Lista de Alunos na Turma</h2>
+<h2>Lista de Alunos</h2>
 
 
 
-<div class="InfoTurma">
-    <h4>Dados da Turma</h4>
-    <h5>Turma: @Html.ViewData.Model.NumTurma  @Html.ViewData.Model.Periodo</h5>
-    <h5>Professor: @Html.ViewData.Model.Professor</h5>
-    <hr />
+<div class="InfoAlunos">
     <table class="table">
         <thead>
             <tr>
                 <th>Cód.</th>
                 <th>Aluno</th>
+                <th>CPF</th>
+                <th>Data de Nascimento</th>
+                <th>Email</th>
+                <th>Telefone</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in @Html.ViewData.Model.Aluno)
+            @foreach (var item in Model.Aluno)
             {
-                <tr>
-                    <td>@item.Id</td>
-                    <td>@item.Nome</td>
-                    <td>
-                        <button type="button" class="EditarAluno btn btn-primary" id="@item.Id">Editar</button>
-                        <button type="button" class="ExcluirAluno btn btn-danger" id="@item.Id" data-turma="@Html.ViewData.Model.NumTurma">Excluir</button>
-                    </td>
-                </tr>
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Nome</td>
+                <td>@item.CPF</td>
+                <td>@item.DataNasc</td>
+                <td>@item.Email</td>
+                <td>@item.Telefone</td>
+                <td>
+                    <button type="button" class="EditarAluno btn btn-primary" id="@item.Id">Editar</button>
+                    <button type="button" class="ExcluirAluno btn btn-danger" id="@item.Id" data-turma="">Excluir</button>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

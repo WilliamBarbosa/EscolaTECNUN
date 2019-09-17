@@ -193,7 +193,13 @@
 
         $("#ExcluirAlunoModal .RemoverAluno").attr("data-turma", NumTurma);
 
+        $("#ExcluirAlunoModal .modal-body").find('strong').remove();
+
         $("#ExcluirAlunoModal .modal-body").prepend('<strong>Deseja mesmo excluir o Aluno ' + Id + ' ?</strong>');
+
+        $("#ExcluirAlunoModal .modal-body").prepend('<p><strong style="color:red">Atenção: Ao remover o aluno será perdido todos os vinculos com as Turmas!</strong></p>');
+
+       
 
         $('#ExcluirAlunoModal').modal('show');
 
@@ -213,6 +219,114 @@
 
                 alert(response.Mensagem);
                 $('#ExcluirAlunoModal').modal('hide');
+
+                setInterval(function () { location.reload(); }, 1000);
+            },
+            error: function (response) {
+                console.log(response.Mensagem);
+            }
+        });
+
+    });
+
+    $(".EditarProfessor").click(function () {
+
+        var Id = this.id;
+
+        $.ajax({
+            url: '/Home/ConsultaProfessor/',
+            type: 'POST',
+            dataType: 'json',
+            data: { CodProfessor: Id },
+            success: function (data) {
+
+                $("#editarProfessorModal .modal-title").text("Editar Professor");
+
+                $("#editarProfessorModal .Id").val(Id);
+
+                $("#editarProfessorModal .Nome").val(data.Nome);
+
+                var dt = new Date(parseInt(data.DataNasc.replace(/(^.*\()|([+-].*$)/g, ''))).toISOString().substring(0, 10);
+
+                $("#editarProfessorModal .DataNasc").val(dt);
+
+                $("#editarProfessorModal .CPF").val(data.CPF);
+
+                $("#editarProfessorModal .Telefone").val(data.Telefone);
+
+                $('#editarProfessorModal').modal('show');
+
+
+            },
+            error: function () {
+                console.log('err');
+            }
+        });
+
+    });
+
+    $('#AtualizarProfessor').click(function () {
+        var jsonText = JSON.parse(JSON.stringify($('#editarProfessorForm').serializeFormJSON()));
+        $.ajax({
+            type: "POST",
+            url: '/Home/AtualizarProfessor/',
+            data: jsonText,
+            dataType: 'json',
+
+            //if received a response from the server
+            success: function (response) {
+                alert(response.Mensagem);
+                $('#editarProfessorModal').modal('hide');
+
+                setInterval(function () { location.reload(); }, 1000);
+
+
+            },
+            error: function (response) {
+                console.log(response.Mensagem);
+            }
+
+        });
+    });
+
+    $(".ExcluirProfessor").click(function () {
+
+        var Id = this.id;
+
+        var NumTurma = $(this).attr('data-turma');
+
+        $("#ExcluirProfessorModal .modal-title").text("Professor " + Id);
+
+        $("#ExcluirProfessorModal .RemoverProfessor").attr("id", Id);
+
+        $("#ExcluirProfessorModal .RemoverProfessor").attr("data-turma", NumTurma);
+
+        $("#ExcluirProfessorModal .modal-body").find('strong').remove();
+
+        $("#ExcluirProfessorModal .modal-body").prepend('<strong>Deseja mesmo excluir o Professor ' + Id + ' ?</strong>');
+
+        $("#ExcluirProfessorModal .modal-body").prepend('<p><strong style="color:red">Caso este professor ministra aula em alguma turma, não será possível excluir!</strong></p>');
+
+
+
+        $('#ExcluirProfessorModal').modal('show');
+
+    });
+
+    $(".RemoverProfessor").click(function () {
+
+        var Id = this.id;
+        var NumTurma = $(this).attr('data-turma');
+
+        $.ajax({
+            url: '/Home/RemoverProfessor/',
+            type: 'POST',
+            dataType: 'json',
+            data: { Id: Id, NumTurma: NumTurma },
+            success: function (response) {
+
+                alert(response.Mensagem);
+                $('#ExcluirProfessorModal').modal('hide');
 
                 setInterval(function () { location.reload(); }, 1000);
             },
