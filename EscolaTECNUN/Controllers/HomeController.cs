@@ -14,7 +14,8 @@ namespace EscolaTECNUN.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            InfoTurma infoturma = new InfoTurma();
+            return VerAlunos(infoturma);
         }
 
         public ActionResult Aluno()
